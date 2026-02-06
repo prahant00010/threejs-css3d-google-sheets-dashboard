@@ -65,16 +65,13 @@ Setup & Run
 
        npm install
 
-3. Configure Google Credentials
+2. Configure Google Credentials
+   Update src/config.js:
 
-
-       Update src/config.js:
-
-export const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_OAUTH_CLIENT_ID";
-export const SHEET_ID = "YOUR_GOOGLE_SHEET_ID";
-
-export const SHEET_NAME = "Sheet1";
-export const SHEET_RANGE = "A1:F1000";
+        export const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_OAUTH_CLIENT_ID";
+       export const SHEET_ID = "YOUR_GOOGLE_SHEET_ID";
+       export const SHEET_NAME = "Sheet1";
+       export const SHEET_RANGE = "A1:F1000";
 
 3. Start Development Server
 
