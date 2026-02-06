@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS3D Data Grid</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">DataGrid</div>
+        <div class="actions">
+          <button class="btn ghost" id="btnSignOut" type="button" hidden>Sign out</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <section id="authView" class="auth">
+          <h1 class="authTitle">Sign In With Google</h1>
+          <div class="authCard">
+            <div class="authCardInner">
+              <div class="authWelcome">Welcome Back</div>
+              <div class="authSub">
+                Sign in to load data from your Google Sheet and visualize it in 3D.
+              </div>
+              <div id="gsiButton" class="gsiButtonWrap"></div>
+              <div class="authHint">
+                You’ll need a Google OAuth Client ID and a Sheet ID configured in <code>src/config.js</code>.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="vizView" class="viz" hidden>
+          <div id="menu" class="menu">
+            <button class="btn" id="table" type="button">TABLE</button>
+            <button class="btn" id="sphere" type="button">SPHERE</button>
+            <button class="btn" id="helix" type="button">HELIX</button>
+            <button class="btn" id="grid" type="button">GRID</button>
+          </div>
+          <div id="container" class="container"></div>
+          <footer class="footer">
+            <div class="legend">
+              <span class="swatch red"></span><span class="legendText">&lt; $100K</span>
+              <span class="swatch orange"></span><span class="legendText">&gt;= $100K</span>
+              <span class="swatch green"></span><span class="legendText">&gt;= $200K</span>
+            </div>
+          </footer>
+        </section>
+      </main>
+    </div>
+
+    <!-- Google Identity Services (OAuth 2.0) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
