@@ -1,12 +1,12 @@
-DataGrid
+#DataGrid
 
     Three.js CSS3D + Google Sheets Visualization
     DataGrid is a modified implementation of the Three.js css3d_periodictable example.
     It visualizes rows from a Google Sheet as interactive CSS3D tiles and supports multiple 3D layouts.
 
-This project was built as a preliminary technical assignment to demonstrate frontend development, data integration, and 3D visualization skills.
+#This project was built as a preliminary technical assignment to demonstrate frontend development, data integration, and 3D visualization skills.
 
-Key Features
+#Key Features
 
     Google Sign-In (OAuth 2.0) for authentication
 
@@ -22,7 +22,7 @@ Key Features
 
     Green: ≥ $200K
 
-  Layout Modes
+  #Layout Modes
 
     Table (20 × 10)
 
@@ -32,7 +32,7 @@ Key Features
 
     Grid (5 × 4 × 10)
 
-Tech Stack
+#Tech Stack
 
     JavaScript (ES6)
 
@@ -44,7 +44,7 @@ Tech Stack
 
     Vite (development & build)
 
-Project Structure
+#Project Structure
        
     datagrid/
     ├── src/
@@ -59,7 +59,7 @@ Project Structure
     ├── package.json
     └── README.md
 
-Setup & Run
+#Setup & Run
 1. Install Dependencies
 
        npm install
@@ -77,7 +77,7 @@ Setup & Run
        npm run dev
 
 
-Open:
+#Open:
            
     http://localhost:5173
 
