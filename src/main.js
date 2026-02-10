@@ -181,6 +181,7 @@ async function startVisualization() {
   const sphereBtn = document.getElementById("sphere");
   const helixBtn = document.getElementById("helix");
   const gridBtn = document.getElementById("grid");
+  const tetraBtn = document.getElementById("tetra");
   
   if (tableBtn) {
     tableBtn.addEventListener("click", (e) => {
@@ -228,6 +229,18 @@ async function startVisualization() {
         return;
       }
       viz.transformTo("grid");
+    });
+  }
+  if (tetraBtn) {
+    tetraBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("TETRA button clicked, viz exists:", !!viz);
+      if (!viz) {
+        console.error("Visualization object is null!");
+        return;
+      }
+      viz.transformTo("tetra");
     });
   }
   } catch (error) {

@@ -102,7 +102,8 @@ function makeTargets({ count }) {
     table: [],
     sphere: [],
     helix: [],
-    grid: []
+    grid: [],
+    tetra: []
   };
 
 
@@ -169,6 +170,53 @@ function makeTargets({ count }) {
     targets.grid.push(obj);
   }
 
+  // Tetrahedron layout (tall, clearly visible pyramid from default camera)
+  // We build an upright pyramid with a wide base and a high apex so the silhouette is obvious.
+  const baseSize = 1600;
+  const baseY = -700;
+  const apexY = 1300;
+
+  // Vertices: triangular base (on XZ plane) + apex above center
+  const v0 = new THREE.Vector3(-baseSize, baseY, -baseSize); // back-left
+  const v1 = new THREE.Vector3(baseSize, baseY, -baseSize);  // back-right
+  const v2 = new THREE.Vector3(0, baseY, baseSize);          // front-center
+  const v3 = new THREE.Vector3(0, apexY, 0);                 // apex
+
+  const verts = [v0, v1, v2, v3];
+
+  // Faces as index triplets referencing verts
+  // 3 side faces + 1 base face
+  const faces = [
+    [0, 1, 3], // back side
+    [1, 2, 3], // right/front side
+    [2, 0, 3], // left/front side
+    [0, 1, 2]  // base
+  ];
+
+  for (let i = 0; i < count; i++) {
+    const obj = new THREE.Object3D();
+    const faceIndex = i % faces.length;
+    const [aIdx, bIdx, cIdx] = faces[faceIndex];
+    const a = verts[aIdx];
+    const b = verts[bIdx];
+    const c = verts[cIdx];
+
+    // Barycentric coordinates for roughly even distribution on each face
+    const u = Math.random();
+    const v = Math.random() * (1 - u);
+    const w = 1 - u - v;
+    const pos = new THREE.Vector3()
+      .addScaledVector(a, u)
+      .addScaledVector(b, v)
+      .addScaledVector(c, w);
+
+    obj.position.copy(pos);
+    // Look slightly outward from the origin so tiles face away and the pyramid reads clearly
+    const look = pos.clone().normalize().multiplyScalar(4000);
+    obj.lookAt(look);
+    targets.tetra.push(obj);
+  }
+
   return targets;
 }
 
@@ -228,15 +276,12 @@ export function createVisualization({ container, people }) {
   function transform(target, duration) {
     console.log(`transform() called with ${target.length} targets, duration: ${duration}`);
     console.log(`Objects count: ${objects.length}, Target count: ${target.length}`);
-    
+
     if (objects.length !== target.length) {
       console.error(`Mismatch! Objects: ${objects.length}, Targets: ${target.length}`);
       return;
     }
-    
-    TWEEN.removeAll();
-    
-   
+
     if (objects.length > 0 && target.length > 0) {
       console.log("First object current position:", {
         x: objects[0].position.x,
@@ -249,74 +294,20 @@ export function createVisualization({ container, people }) {
         z: target[0].position.z
       });
     }
-    
-    let completedTweens = 0;
-    const totalTweens = objects.length * 2;
-    
+
+    // Simpler: instantly move objects to target positions/rotations
+    // so layout changes are obvious, even if tweening misbehaves.
     for (let i = 0; i < objects.length; i++) {
       const object = objects[i];
       const targetObj = target[i];
 
-      const posTween = new TWEEN.Tween(object.position)
-        .to(
-          {
-            x: targetObj.position.x,
-            y: targetObj.position.y,
-            z: targetObj.position.z
-          },
-          duration
-        )
-        .easing(TWEEN.Easing.Exponential.InOut)
-        .onStart(() => {
-          if (i === 0) console.log("First position tween started");
-        })
-        .onUpdate(() => {
-        
-          object.updateMatrix();
-          object.updateMatrixWorld(true);
-          if (i === 0 && Math.random() < 0.1) { 
-            console.log("First object position updating:", {
-              x: object.position.x.toFixed(2),
-              y: object.position.y.toFixed(2),
-              z: object.position.z.toFixed(2)
-            });
-          }
-        })
-        .onComplete(() => {
-          completedTweens++;
-          if (completedTweens === totalTweens) {
-            console.log("All tweens completed");
-            render(); 
-          }
-        })
-        .start();
-
-      const rotTween = new TWEEN.Tween(object.rotation)
-        .to(
-          {
-            x: targetObj.rotation.x,
-            y: targetObj.rotation.y,
-            z: targetObj.rotation.z
-          },
-          duration
-        )
-        .easing(TWEEN.Easing.Exponential.InOut)
-        .onUpdate(() => {
-         
-          object.updateMatrix();
-          object.updateMatrixWorld(true);
-        })
-        .onComplete(() => {
-          completedTweens++;
-          if (completedTweens === totalTweens) {
-            console.log("All tweens completed");
-            render(); 
-          }
-        })
-        .start();
+      object.position.copy(targetObj.position);
+      object.rotation.copy(targetObj.rotation);
+      object.updateMatrix();
+      object.updateMatrixWorld(true);
     }
-    
-    console.log(`Started ${totalTweens} tweens`);
+
+    render();
   }
 
   function onResize() {
