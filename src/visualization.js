@@ -184,8 +184,7 @@ function makeTargets({ count }) {
 
   const verts = [v0, v1, v2, v3];
 
-  // Faces as index triplets referencing verts
-  // 3 side faces + 1 base face
+  // Faces: 4 triangular faces (3 sides + base)
   const faces = [
     [0, 1, 3], // back side
     [1, 2, 3], // right/front side
@@ -197,21 +196,38 @@ function makeTargets({ count }) {
     const obj = new THREE.Object3D();
     const faceIndex = i % faces.length;
     const [aIdx, bIdx, cIdx] = faces[faceIndex];
-    const a = verts[aIdx];
-    const b = verts[bIdx];
-    const c = verts[cIdx];
+    const a = verts[aIdx].clone();
+    const b = verts[bIdx].clone();
+    const c = verts[cIdx].clone();
 
-    // Barycentric coordinates for roughly even distribution on each face
-    const u = Math.random();
-    const v = Math.random() * (1 - u);
+    // Barycentric coordinates strictly on the triangular face.
+    // We bias slightly toward edges/vertices to keep the pyramid sharp,
+    // but never move points inside the volume.
+    let u = Math.random();
+    let v = Math.random() * (1 - u);
+    // Edge/vertex bias (still on the face)
+    const bias = 0.5;
+    u = u * bias + u * u * (1 - bias);
+    v = v * bias + v * v * (1 - bias);
+    if (u + v > 1) {
+      u = 1 - u;
+      v = 1 - v;
+    }
     const w = 1 - u - v;
-    const pos = new THREE.Vector3()
+
+    let pos = new THREE.Vector3()
       .addScaledVector(a, u)
       .addScaledVector(b, v)
       .addScaledVector(c, w);
 
+    // Push slightly outward along the face normal so tiles sit clearly on the surface
+    const ab = b.clone().sub(a);
+    const ac = c.clone().sub(a);
+    const normal = new THREE.Vector3().crossVectors(ab, ac).normalize();
+    pos.addScaledVector(normal, 60);
+
     obj.position.copy(pos);
-    // Look slightly outward from the origin so tiles face away and the pyramid reads clearly
+    // Make tiles face outward from the pyramid center
     const look = pos.clone().normalize().multiplyScalar(4000);
     obj.lookAt(look);
     targets.tetra.push(obj);
